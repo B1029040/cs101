@@ -1,112 +1,123 @@
-#include<stdio.h>
-#include<stdlib.h> 
-#include<time.h>
-#include <string.h>
+//完成了!在整理一下
+#include <stdio.h> //檔案開啟和關閉的標頭檔
+#include <stdlib.h> //最初的一些設定
+#include <time.h> //時間函數
+#include <string.h> //strlen-求字串長度
 
-FILE* lottery_txt;
-FILE* binfile;
-FILE* operator_id;
-static int currentCount;
-/*
-    operator_id = fopen("operator_id.txt", "wb+");
-    int people;
-    scanf ("%d", &people);
-    int people_ID[1];
-    people_ID[0] = people;
-    fwrite(operator_id, sizeof(int), 1, operator_id);
-    fread()
-*/
-void countTimes(){
-    int read[1];
-    int write[1];    
-    if((binfile = fopen("binfile.txt", "r")) == NULL){
-        binfile = fopen("binfile.txt", "wb+");
-        write[0] = 1;       
-        fwrite(write, sizeof(int), 1, binfile);
-    }
-    else{
-        binfile = fopen("binfile.txt", "rb+");
-        fseek(binfile, 0, SEEK_SET);
-        fread(read, sizeof(int), 1, binfile);
-        fclose(binfile);    
-        write[0] = read[0] + 1;
-        binfile = fopen("binfile.txt", "wb+");
-        fwrite(write, sizeof(int), 1, binfile);
-    }
-    fclose(binfile);
-    currentCount = write[0];
-}  
+int number[7] = {0};
+int counter = 0;
+int ID;
+FILE* count;
+FILE* lotto;
+FILE* user_ID;
 
-void get_6_RandNum(){
-    int r[12];
-    int i = 0, j, box;
-    while(i<=5){
-        box = rand()%69+1;
-        for(j = 0; j < i; j++){
-            if(box == r[j])break;
-        }
-        if(j == i){
-            r[i] = box;
-            i++;
+void print_number(int i) {
+    int special;//最後會有一個special number
+    for(int j=0; j<6; j++) {
+        number[j] = rand()%69+1;//前面代表共69個數，後面代表從1開始
+        for(int k=0; k<j; k++) {
+            if(number[j]==number[k]) {
+                j -=1;
+                break;
+            } 
         }
     }
-    for (int a = 0; a < 6; ++a) {
-        for (int b = 0; b < a; ++b) {
-              if (r[b] > r[a]) {
-            int temp = r[b];
-            r[b] = r[a];
-            r[a] = temp;
-            }    
-           }
+    for(int a=0; a<5; a++) {
+        for(int b=a+1; b<6; b++) {
+            if(number[a]>number[b]) {
+                int temp;
+                temp = number[a];
+                number[a] = number[b];
+                number[b] = temp;
+                
+            }
+        }
     }
-    r[6] = rand()%10+1;//special number
-    for(j = 0; j <= 6; j++){
-        fprintf(lottery_txt,"%02d ",r[j]);
+    number[6] = rand()%10+1;//這個是最後的special number
+    fprintf(lotto, "[%d]：", i);
+    for(int a=0; a<7; a++) {
+        fprintf(lotto, "%02d ", number[a]);
     }
-}
-void Delay(unsigned int secs){
-    unsigned int retTime = time(0) + secs;
-    while (time(0) < retTime);
+    fprintf(lotto, "\n");
 }
 
-int main(){
-    int a, i, p;
-    char currentName[80];
-    int people_ID[1];//
-    int read_people[1];//
-    printf("welcome to the lottery machine(?)\nhow many lottery you wanna buy:");
-    scanf("%d", &i);
-    for(int t = 1; t <= 3; t++){
-        Delay(1);
-        printf(".");
+void print_nothing(int i) {
+    fprintf(lotto, "[%d]：", i);
+    for(int j=1; j<=7; j++) {
+        fprintf(lotto, "-- ");
     }
-    Delay(1);
-    printf("\noutput you %d set(s) of lottery to lotto.txt\n", i);
-    printf("請輸入操作人員ID：(0~5)：");//
-    int people;//
-    scanf ("%d", &people);//
-    people =people_ID[0] ;//
-    fwrite(operator_ID, sizeof(int), 1, operator_id);//
-    srand(time(NULL));
-    countTimes();
-    sprintf(currentName, "lotto[%04d].txt", currentCount);
-    lottery_txt = fopen(currentName,"w+");
-    time_t now;
-    time(&now);
-    char* dt = ctime(&now);
-    dt[strlen(dt)-1]=0;
-    fprintf(lottery_txt,"========= lotto649 =========\n= %s =\n", dt);
-    fprintf(lottery_txt,"========+ No.%05d +========\n", currentCount);
-    for(a = 1; a <= i; a++){
-        fprintf(lottery_txt,"= [%d]:", a);
-        get_6_RandNum();
-        fprintf(lottery_txt,"=\n");
+    fprintf(lotto, "\n");
+}
+
+void count_sell() { //數到底賣出了幾張
+    int arr_write[1]; 
+    int arr_read[1];
+    if((count = fopen("count.bin", "r")) == NULL) {
+        count = fopen("count.bin", "wb+");//後面有+，沒有檔案也會開啟一個檔案
+        arr_write[0] = 1;
+        fwrite(arr_write, sizeof(int), 1, count);
+    } else {
+        count = fopen("count.bin", "rb+");
+        fseek(count, 0, SEEK_SET);//移到檔案的一開頭--文件開始
+        fread(arr_read, sizeof(int), 1, count);
+        fclose(count);
+        arr_write[0] = arr_read[0]+1;
+        count = fopen("count.bin", "wb+");
+        fwrite(arr_write, sizeof(int), 1, count);
+    } 
+    fclose(count);
+    counter = arr_write[0];
+}
+
+void op_ID() {
+    user_ID = fopen("operstor_id.bin", "wb+");
+    int arr_ID[1];
+    arr_ID[0] = ID;
+    fwrite(arr_ID, sizeof(int), 1, user_ID);
+    fclose (user_ID);
+}
+
+int main() {
+    int n;
+    char lotto_name[100];
+    printf("歡迎光臨長庚樂透彩購買機台\n");
+    printf("請輸入操作人員ID：(0~5):");
+    scanf("%d", &ID);
+    printf("請問您要買幾組樂透彩(1~5)：");
+    scanf("%d", &n);
+    while(n > 0) {
+        if(n>5) {
+            printf("請重新輸入(1~5張)：");
+            scanf("%d", &n);
+        } else break;
     }
-    p = fread (read_people, sizeof(int), 1, operator_id);//
-    for(; a <= 5; a++)fprintf(lottery_txt,"= [%d]:== == == == == == == =\n", a);
-    fprintf(lottery_txt, "========* Op.%05d *========", operator_id[0]);//
-    fprintf(lottery_txt,"========= csie@CGU =========\n");
-    fclose(lottery_txt);
+    count_sell(count);
+    sprintf(lotto_name, "lotto[%05d].txt", counter);//文字儲存到的矩陣/要儲存的文字/輸入的東西
+    lotto = fopen(lotto_name, "w+");//!!這裡不用雙引號
+    //lotto = fopen("lotto.txt", "w+");
+    fprintf(lotto, "========= lotto649 =========\n");
+    fprintf(lotto, "========+ No.%05d +========\n", counter);
+    time_t curtime;
+    time(&curtime); //因為time後面有\n, 因此需要先計算字串長度，在減掉
+    char* tmstr = ctime(&curtime); //變動記憶體，計算
+    size_t length = strlen(tmstr);
+    tmstr[length-1] = '\0';//把\n改成\0
+    fprintf(lotto, "= %s =\n", tmstr);
+    srand((unsigned) time(NULL));
+    for (int i=1; i<=5; i++) {
+        if (i<=n) {
+            print_number(i);
+        } else {
+            print_nothing(i);
+        }
+    }
+    op_ID();
+    fprintf(lotto, "========* Op.%05d *========\n", ID);
+    fprintf(lotto, "========= csie@CGU =========\n");
+    fclose(lotto);
+    printf("已為您購買的 %d 組樂透組合輸出至 lotto[%05d].txt\n", n, counter);
+
+    return 0;
 }
 
 
