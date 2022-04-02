@@ -1,4 +1,3 @@
-//完成了!在整理一下
 #include <stdio.h> //檔案開啟和關閉的標頭檔
 #include <stdlib.h> //最初的一些設定
 #include <time.h> //時間函數
