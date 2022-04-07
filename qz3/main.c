@@ -2,7 +2,7 @@
 
 FILE* hanoi;
 
-/int rec_dec(char* s) {
+int rec_dec(char* s) {
     if(!*s) {
         printf("\n");
         return 0;
@@ -11,7 +11,7 @@ FILE* hanoi;
     
 }
 
-/void hanoii (int n, char A, char B, char C) {
+void hanoii (int n, char A, char B, char C) {
 	if(n) {
 		hanoii(n-1, A, C, B);
 		fprintf(hanoi,  "Move disk %d from %c to %c\n", n, A, C);
