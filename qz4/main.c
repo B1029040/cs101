@@ -1,54 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void swap_func(int* i, int* j) {
+void swap (int* n, int* m){
     int tmp;
-    tmp = *i;
-    *i = *j;
-    *j = tmp;
-    printf("after swap, n = %d, m = %d\n", *i, *j);
+    tmp = *n;
+    *n = *m;
+    *m = tmp;
 }
-
-void swapArray(int* source, int* dest, int size) {
-    for(int i=0; i<size; i++) {
-        int tmp;
-        tmp = *(source+i);
-        *(source+i) = *(dest+i);
-        *(dest+i) = tmp;
+void swapArray (int a[], int b[], int len){
+    int tmp;
+    for(int i=0; i<len;i++){
+        tmp = *(a+i);
+        *(a+i) = *(b+i);
+        *(b+i) = tmp;
     }
+
 }
-
-int printArray(int* array, int size) {
-    for(int i=0; i<size; i++) {
-        if(i == (size-1)) {
-            printf("%d]\n", *(array+i));
-            break;
-        }
-        printf("%d, ", *(array+i));
-    }
+void printArraay(int a[], int size){
+    for(int i=0;i<size-1;i++) 
+        printf("%d, ", *(a+i));
+    printf("%d]\n",*(a+size-1));
 }
-
-
-
-int main() {
-    int n, m;
-    n = 1; 
-    m = 2;
+char* copy_string (char* s){
+    int len = 0;
+    while (*(s+len) != '\0') len++;
+    char* New = calloc (len+1, sizeof(char));
+    for (int i=0; i<=len; i++)  *(New+i) = *(s+i);
+    return New;
+}
+int main (){
+    int n = 1, m = 2;
+    swap(&n, &m);
     int size = 10;
-    int source[10] = {0, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    int source [10]= {0, 9, 8, 7, 6, 5, 4, 3, 2, 1};
     int dest[10] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+    swapArray (source, dest, size);
     char str[] = "IU!IU!IU!IU!";
     char* cp_str = copy_string(str);
-    printf("No.1 -------------------\n");
-    swap_func(&n, &m);
-    printf("No.2 -------------------\n");
-    swapArray(source, dest, size);
+    printf("No.1------------\n");
+    printf("after swap, n=%d, m=%d\n", n, m);
+    printf("No.2------------\n");
     printf("after swap array, source array = [");
-    printArray(source, size);
+    printArraay(source, size);
     printf("after swap array, dest array = [");
-    printArray(dest, size);
-    printf("No.3 -------------------\n");
-    char* cp_str = copy_string(str);
-    
-    return 0;
+    printArraay(dest, size);
+    printf("No.3------------\n");
+    printf("copy string = %s\n", cp_str);
+    free(cp_str);
+    cp_str = NULL;
 }
