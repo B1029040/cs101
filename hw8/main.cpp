@@ -74,12 +74,4 @@ int main(){
     return 0;
 }
 
-int main() {
-	LinkedList mylink;
-	mylink.append_node(0);
-	mylink.append_node(1);
-	mylink.append_node(2);
-	mylink.append_node(3);
-	mylink.del_node(1);
-	return 0;
-}
+
